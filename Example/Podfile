@@ -1,0 +1,8 @@
+target 'Example' do
+  use_frameworks!
+
+  pod 'FluxxKit', path: './../../FluxxKit/'
+  pod 'RxSwift'
+  pod 'RxCocoa'
+  pod 'Himotoki'
+end

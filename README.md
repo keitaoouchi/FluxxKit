@@ -38,6 +38,8 @@ We have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful 
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
+More complicated real world example is [here](https://github.com/keitaoouchi/FluxxKitExample).
+
 ## Requirements
 
 iOS 9 or later.

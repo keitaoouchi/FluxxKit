@@ -125,6 +125,8 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 More complicated real world example is [here](https://github.com/keitaoouchi/FluxxKitExample).
 
+![GIF](https://raw.githubusercontent.com/keitaoouchi/FluxxKitExample/master/sample.gif "GIF")
+
 ## Requirements
 
 iOS 9 or later.

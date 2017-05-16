@@ -1,6 +1,5 @@
 # FluxxKit
 
-[![CI Status](http://img.shields.io/travis/keitaoouchi/FluxxKit.svg?style=flat)](https://travis-ci.org/keitaoouchi/FluxxKit)
 [![Swift 3.0](https://img.shields.io/badge/Swift-3.0-orange.svg?style=flat)](https://swift.org/)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![Version](https://img.shields.io/cocoapods/v/FluxxKit.svg?style=flat)](http://cocoapods.org/pods/FluxxKit)
@@ -16,6 +15,92 @@ Porting [facebook's flux implementation](https://github.com/facebook/flux) in Sw
 ##### Why no callback?
 
 We have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful things could be implemented as Observable or Stream, and ViewController could bind and react to them.
+
+### Getting Started
+
+1. State
+
+  ```swift
+  import FluxxKit
+
+  final class ViewModel: StateType {
+    var count = Observable<Int>(0)
+  }
+  ```
+
+2. Action
+
+  ```swift
+  extension ViewModel {
+    enum Action: ActionType {
+      case plus
+      case minus
+    }
+  }
+  ```
+
+3. Reducer
+
+  ```swift
+  extension ViewModel {
+    final class Reducer: FluxxKit.Reducer<ViewModel, Action> {
+      override func reduce(action: Action, to state: ViewModel) {
+
+        switch action {
+        case .plus:
+          state.count.value = state.count + 1
+        case .minus:
+          state.count.value = state.count - 1
+        }
+      }
+    }
+  }
+  ```
+
+4. View
+
+  Create store and register it to dispatcher, and bind store's state:
+  ```swift
+  import FluxxKit
+
+  final class ViewController: UIViewController {
+
+    @IBOutlet var counterLabel: UILabel!
+    @IBOutlet var plusButton: UIButton!
+    @IBOutlet var minusButton: UIButton!
+
+    override func viewDidLoad() {
+      super.viewDidLoad()
+
+      let store = Store<ViewModel, ViewModel.Action>(
+        reducer: ViewModel.Reducer()
+      )
+      Dispatcher.shared.register(store: store)
+
+      store.state.asObservable().onserveOn(MainScheduler.instance)
+        .subscribe(onNext: { [weak self] count in
+          counterLabel.text = "\(count)"
+        })
+    }
+
+    deinit {
+      Dispatcher.shared.unregister(identifier: store.identifier)
+    }
+  }
+  ```
+
+  Dispatch action with UI action:
+  ```swift
+  @IBAction
+  func onTouchPlusButton(sender: Any) {
+    Dispatcher.shared.dispatch(action: ViewModel.Action.plus)
+  }
+
+  @IBAction
+  func onTouchMinusButton(sender: Any) {
+    Dispatcher.shared.dispatch(action: ViewModel.Action.minus)
+  }
+  ```
 
 ### Scenario
 

@@ -22,6 +22,7 @@ We have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful 
 
   ```swift
   import FluxxKit
+  import RxSwift
 
   final class ViewModel: StateType {
     var count = Observable<Int>(0)
@@ -62,6 +63,7 @@ We have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful 
   Create store and register it to dispatcher, and bind store's state:
   ```swift
   import FluxxKit
+  import RxSWift
 
   final class ViewController: UIViewController {
 
@@ -77,7 +79,7 @@ We have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful 
       )
       Dispatcher.shared.register(store: store)
 
-      store.state.asObservable().onserveOn(MainScheduler.instance)
+      store.state.count.asObservable().onserveOn(MainScheduler.instance)
         .subscribe(onNext: { [weak self] count in
           counterLabel.text = "\(count)"
         })

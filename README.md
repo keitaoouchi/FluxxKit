@@ -70,23 +70,23 @@ We have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful 
     @IBOutlet var counterLabel: UILabel!
     @IBOutlet var plusButton: UIButton!
     @IBOutlet var minusButton: UIButton!
+    var store = Store<ViewModel, ViewModel.Action>(
+      reducer: ViewModel.Reducer()
+    )
 
     override func viewDidLoad() {
       super.viewDidLoad()
 
-      let store = Store<ViewModel, ViewModel.Action>(
-        reducer: ViewModel.Reducer()
-      )
-      Dispatcher.shared.register(store: store)
+      Dispatcher.shared.register(store: self.store)
 
       store.state.count.asObservable().onserveOn(MainScheduler.instance)
         .subscribe(onNext: { [weak self] count in
-          counterLabel.text = "\(count)"
+          self?.counterLabel.text = "\(count)"
         })
     }
 
     deinit {
-      Dispatcher.shared.unregister(identifier: store.identifier)
+      Dispatcher.shared.unregister(identifier: self.store.identifier)
     }
   }
   ```

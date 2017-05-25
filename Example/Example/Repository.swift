@@ -21,12 +21,12 @@ extension Repository {
   }
 
   static func search(text: String) -> Observable<[Repository]> {
-    return Observable.create {  observer in
+    return Observable.create { observer in
 
       if let url = URL(string: "https://api.github.com/search/repositories?q=\(text)&sort=stars&order=desc") {
 
         let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: url) { data, res, error in
+        let task = session.dataTask(with: url) { data, _, error in
           if let error = error {
             observer.onError(error)
             return

@@ -15,17 +15,16 @@ public final class Store<S: StateType, A: ActionType>: StoreType {
   }
 
   public func dispatch(action: ActionType) {
-    guard let action = action as? A, responds(to: action) else {
-      return
-    }
+    guard let action = action as? A, responds(to: action) else { return }
+
     self.reducer.reduce(state: self.state, action: action)
   }
 
   public func responds(to action: ActionType) -> Bool {
-    guard let _ = action as? A else {
-      return false
+    if action is A {
+      return true
     }
-    return true
+    return false
   }
 
 }

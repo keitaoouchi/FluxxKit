@@ -1,14 +1,3 @@
-import Foundation
-
-public protocol StoreType: class {
-
-  var identifier: String { get set }
-
-  func responds(to: ActionType) -> Bool
-
-  func dispatch(action: ActionType)
-}
-
 public final class Store<S: StateType, A: ActionType>: StoreType {
 
   public var identifier: String = Util.uuid()
@@ -26,17 +15,16 @@ public final class Store<S: StateType, A: ActionType>: StoreType {
   }
 
   public func dispatch(action: ActionType) {
-    guard let action = action as? A, responds(to: action) else {
-      return
-    }
-    self.reducer.reduce(action: action, to: self.state)
+    guard let action = action as? A, responds(to: action) else { return }
+
+    self.reducer.reduce(state: self.state, action: action)
   }
 
   public func responds(to action: ActionType) -> Bool {
-    guard let _ = action as? A else {
-      return false
+    if action is A {
+      return true
     }
-    return true
+    return false
   }
 
 }

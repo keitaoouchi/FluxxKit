@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name          = "FluxxKit"
-  s.version       = "1.0.0"
+  s.version       = "1.0.1"
   s.summary       = "Unidirectional data flow for Reactive programming."
   s.homepage      = "https://github.com/keitaoouchi/FluxxKit"
   s.license       = { :type => "MIT", :file => "LICENSE" }

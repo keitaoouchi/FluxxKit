@@ -1,0 +1,11 @@
+line_length: 200
+excluded:
+  - Pods
+  - Carthage
+included:
+  - FluxxKit/
+  - Example/Example/
+variable_name:
+  excluded:
+    - e
+reporter: "xcode"

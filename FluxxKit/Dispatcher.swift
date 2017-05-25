@@ -5,25 +5,30 @@ public final class Dispatcher {
   public static let shared = Dispatcher()
 
   private var stores: [StoreType] = []
+
   private var middlewares: [MiddlewareType] = []
 
   public func register(middleware: MiddlewareType) {
     precondition(Thread.isMainThread)
+
     self.middlewares.append(middleware)
   }
 
   public func unregister(middleware middlewareType: MiddlewareType.Type) {
     precondition(Thread.isMainThread)
+
     self.middlewares = self.middlewares.filter { type(of: $0) != middlewareType }
   }
 
   public func register(store: StoreType) {
     precondition(Thread.isMainThread)
+
     self.stores.append(store)
   }
 
   public func unregister(identifier: String) {
     precondition(Thread.isMainThread)
+
     self.stores = self.stores.filter { $0.identifier != identifier }
   }
 

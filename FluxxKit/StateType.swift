@@ -1,3 +1,3 @@
-public protocol StateType: class {
+public protocol StateType {
   init()
 }

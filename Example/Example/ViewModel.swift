@@ -73,13 +73,14 @@ extension ViewModel {
     }
 
     func after(dispatch action: ActionType, to store: StoreType) {
-      // do nothing
+      print(store)
     }
+
   }
 
   // Handle action
   final class Reducer: FluxxKit.Reducer<ViewModel, Action> {
-    override func reduce(action: Action, to state: ViewModel) {
+    override func reduce(state: ViewModel, action: Action) {
 
       switch action {
       case .reset:

@@ -12,9 +12,10 @@
 		DEC4F38E1EC326620008EAC3 /* Dispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC4F3871EC326620008EAC3 /* Dispatcher.swift */; };
 		DEC4F38F1EC326620008EAC3 /* Middleware.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC4F3881EC326620008EAC3 /* Middleware.swift */; };
 		DEC4F3901EC326620008EAC3 /* Reducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC4F3891EC326620008EAC3 /* Reducer.swift */; };
-		DEC4F3911EC326620008EAC3 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC4F38A1EC326620008EAC3 /* State.swift */; };
+		DEC4F3911EC326620008EAC3 /* StateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC4F38A1EC326620008EAC3 /* StateType.swift */; };
 		DEC4F3921EC326620008EAC3 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC4F38B1EC326620008EAC3 /* Store.swift */; };
 		DEC4F3931EC326620008EAC3 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC4F38C1EC326620008EAC3 /* Util.swift */; };
+		FC26C0461ED58AFE00966AB0 /* StoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC26C0451ED58AFE00966AB0 /* StoreType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,9 +26,10 @@
 		DEC4F3871EC326620008EAC3 /* Dispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Dispatcher.swift; sourceTree = "<group>"; };
 		DEC4F3881EC326620008EAC3 /* Middleware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Middleware.swift; sourceTree = "<group>"; };
 		DEC4F3891EC326620008EAC3 /* Reducer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reducer.swift; sourceTree = "<group>"; };
-		DEC4F38A1EC326620008EAC3 /* State.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
+		DEC4F38A1EC326620008EAC3 /* StateType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StateType.swift; sourceTree = "<group>"; };
 		DEC4F38B1EC326620008EAC3 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		DEC4F38C1EC326620008EAC3 /* Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
+		FC26C0451ED58AFE00966AB0 /* StoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,8 +66,9 @@
 				DEC4F3871EC326620008EAC3 /* Dispatcher.swift */,
 				DEC4F3881EC326620008EAC3 /* Middleware.swift */,
 				DEC4F3891EC326620008EAC3 /* Reducer.swift */,
-				DEC4F38A1EC326620008EAC3 /* State.swift */,
+				DEC4F38A1EC326620008EAC3 /* StateType.swift */,
 				DEC4F38B1EC326620008EAC3 /* Store.swift */,
+				FC26C0451ED58AFE00966AB0 /* StoreType.swift */,
 				DEC4F38C1EC326620008EAC3 /* Util.swift */,
 				DEC4F37E1EC325EA0008EAC3 /* FluxKit.h */,
 				DEC4F37F1EC325EA0008EAC3 /* Info.plist */,
@@ -154,11 +157,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				DEC4F38F1EC326620008EAC3 /* Middleware.swift in Sources */,
+				FC26C0461ED58AFE00966AB0 /* StoreType.swift in Sources */,
 				DEC4F38E1EC326620008EAC3 /* Dispatcher.swift in Sources */,
 				DEC4F3901EC326620008EAC3 /* Reducer.swift in Sources */,
 				DEC4F3921EC326620008EAC3 /* Store.swift in Sources */,
 				DEC4F3931EC326620008EAC3 /* Util.swift in Sources */,
-				DEC4F3911EC326620008EAC3 /* State.swift in Sources */,
+				DEC4F3911EC326620008EAC3 /* StateType.swift in Sources */,
 				DEC4F38D1EC326620008EAC3 /* Action.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

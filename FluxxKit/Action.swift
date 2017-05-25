@@ -1,1 +1,2 @@
-public protocol ActionType {}
+public protocol ActionType {
+}

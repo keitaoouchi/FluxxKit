@@ -3,3 +3,5 @@ language: swift
 script:
   - swiftlint
   - bundle exec pod lib lint
+  - carthage bootstrap --platform ios
+  - xcodebuild test -scheme FluxxKitTests -configuration Debug -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 7 Plus" | xcpretty -c

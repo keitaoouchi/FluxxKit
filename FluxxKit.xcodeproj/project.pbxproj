@@ -16,7 +16,22 @@
 		DEC4F3921EC326620008EAC3 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC4F38B1EC326620008EAC3 /* Store.swift */; };
 		DEC4F3931EC326620008EAC3 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEC4F38C1EC326620008EAC3 /* Util.swift */; };
 		FC26C0461ED58AFE00966AB0 /* StoreType.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC26C0451ED58AFE00966AB0 /* StoreType.swift */; };
+		FC702AAA1ED8093C00C11174 /* FluxxKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DEC4F37B1EC325EA0008EAC3 /* FluxxKit.framework */; };
+		FC702AB21ED8095700C11174 /* MiddlewareSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC702AB01ED8095700C11174 /* MiddlewareSpec.swift */; };
+		FC702AB31ED8095700C11174 /* StoreSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC702AB11ED8095700C11174 /* StoreSpec.swift */; };
+		FC702AB71ED8098F00C11174 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC702AB51ED8098F00C11174 /* Nimble.framework */; };
+		FC702AB81ED8098F00C11174 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC702AB61ED8098F00C11174 /* Quick.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		FC702AAB1ED8093C00C11174 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DEC4F3721EC325EA0008EAC3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DEC4F37A1EC325EA0008EAC3;
+			remoteInfo = FluxxKit;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		DEC4F37B1EC325EA0008EAC3 /* FluxxKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FluxxKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -30,6 +45,12 @@
 		DEC4F38B1EC326620008EAC3 /* Store.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Store.swift; sourceTree = "<group>"; };
 		DEC4F38C1EC326620008EAC3 /* Util.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 		FC26C0451ED58AFE00966AB0 /* StoreType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreType.swift; sourceTree = "<group>"; };
+		FC702AA51ED8093C00C11174 /* FluxxKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FluxxKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC702AA91ED8093C00C11174 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FC702AB01ED8095700C11174 /* MiddlewareSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MiddlewareSpec.swift; sourceTree = "<group>"; };
+		FC702AB11ED8095700C11174 /* StoreSpec.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StoreSpec.swift; sourceTree = "<group>"; };
+		FC702AB51ED8098F00C11174 /* Nimble.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Nimble.framework; path = Carthage/Build/iOS/Nimble.framework; sourceTree = "<group>"; };
+		FC702AB61ED8098F00C11174 /* Quick.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quick.framework; path = Carthage/Build/iOS/Quick.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,6 +61,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FC702AA21ED8093C00C11174 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC702AB71ED8098F00C11174 /* Nimble.framework in Frameworks */,
+				FC702AB81ED8098F00C11174 /* Quick.framework in Frameworks */,
+				FC702AAA1ED8093C00C11174 /* FluxxKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -47,7 +78,9 @@
 			isa = PBXGroup;
 			children = (
 				DEC4F37D1EC325EA0008EAC3 /* FluxxKit */,
+				FC702AA61ED8093C00C11174 /* FluxxKitTests */,
 				DEC4F37C1EC325EA0008EAC3 /* Products */,
+				FC702AB41ED8098E00C11174 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -55,6 +88,7 @@
 			isa = PBXGroup;
 			children = (
 				DEC4F37B1EC325EA0008EAC3 /* FluxxKit.framework */,
+				FC702AA51ED8093C00C11174 /* FluxxKitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -74,6 +108,25 @@
 				DEC4F37F1EC325EA0008EAC3 /* Info.plist */,
 			);
 			path = FluxxKit;
+			sourceTree = "<group>";
+		};
+		FC702AA61ED8093C00C11174 /* FluxxKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				FC702AB01ED8095700C11174 /* MiddlewareSpec.swift */,
+				FC702AB11ED8095700C11174 /* StoreSpec.swift */,
+				FC702AA91ED8093C00C11174 /* Info.plist */,
+			);
+			path = FluxxKitTests;
+			sourceTree = "<group>";
+		};
+		FC702AB41ED8098E00C11174 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FC702AB51ED8098F00C11174 /* Nimble.framework */,
+				FC702AB61ED8098F00C11174 /* Quick.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -108,16 +161,41 @@
 			productReference = DEC4F37B1EC325EA0008EAC3 /* FluxxKit.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		FC702AA41ED8093C00C11174 /* FluxxKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FC702AAF1ED8093C00C11174 /* Build configuration list for PBXNativeTarget "FluxxKitTests" */;
+			buildPhases = (
+				FC702AA11ED8093C00C11174 /* Sources */,
+				FC702AA21ED8093C00C11174 /* Frameworks */,
+				FC702AA31ED8093C00C11174 /* Resources */,
+				FC702AB91ED8099400C11174 /* Carthage */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FC702AAC1ED8093C00C11174 /* PBXTargetDependency */,
+			);
+			name = FluxxKitTests;
+			productName = FluxxKitTests;
+			productReference = FC702AA51ED8093C00C11174 /* FluxxKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		DEC4F3721EC325EA0008EAC3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0830;
 				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = com.keita.oouchi;
 				TargetAttributes = {
 					DEC4F37A1EC325EA0008EAC3 = {
+						CreatedOnToolsVersion = 8.3.2;
+						LastSwiftMigration = 0830;
+						ProvisioningStyle = Manual;
+					};
+					FC702AA41ED8093C00C11174 = {
 						CreatedOnToolsVersion = 8.3.2;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Manual;
@@ -137,6 +215,7 @@
 			projectRoot = "";
 			targets = (
 				DEC4F37A1EC325EA0008EAC3 /* FluxxKit */,
+				FC702AA41ED8093C00C11174 /* FluxxKitTests */,
 			);
 		};
 /* End PBXProject section */
@@ -149,7 +228,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FC702AA31ED8093C00C11174 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		FC702AB91ED8099400C11174 /* Carthage */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Quick.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Nimble.framework",
+			);
+			name = Carthage;
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		DEC4F3761EC325EA0008EAC3 /* Sources */ = {
@@ -167,7 +272,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FC702AA11ED8093C00C11174 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC702AB21ED8095700C11174 /* MiddlewareSpec.swift in Sources */,
+				FC702AB31ED8095700C11174 /* StoreSpec.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FC702AAC1ED8093C00C11174 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DEC4F37A1EC325EA0008EAC3 /* FluxxKit */;
+			targetProxy = FC702AAB1ED8093C00C11174 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		DEC4F3811EC325EA0008EAC3 /* Debug */ = {
@@ -316,6 +438,43 @@
 			};
 			name = Release;
 		};
+		FC702AAD1ED8093C00C11174 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = FluxxKitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.keita.oouchi.FluxxKitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		FC702AAE1ED8093C00C11174 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = FluxxKitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.keita.oouchi.FluxxKitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -336,6 +495,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		FC702AAF1ED8093C00C11174 /* Build configuration list for PBXNativeTarget "FluxxKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC702AAD1ED8093C00C11174 /* Debug */,
+				FC702AAE1ED8093C00C11174 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

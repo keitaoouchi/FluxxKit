@@ -26,10 +26,22 @@ public final class Dispatcher {
     self.stores.append(store)
   }
 
-  public func unregister(identifier: String) {
+  public func unregister(store: StoreType) {
     precondition(Thread.isMainThread)
 
-    self.stores = self.stores.filter { $0.identifier != identifier }
+    self.unregister(store: store.identifier)
+  }
+
+  public func unregister(store storeIdentifier: String) {
+    precondition(Thread.isMainThread)
+
+    self.stores = self.stores.filter { $0.identifier != storeIdentifier }
+  }
+
+  public func unregister(store storeType: StoreType.Type) {
+    precondition(Thread.isMainThread)
+
+    self.stores = self.stores.filter { type(of: $0) != storeType }
   }
 
   public func dispatch(action: ActionType, identifier: String? = nil) {

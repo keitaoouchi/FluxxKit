@@ -503,6 +503,7 @@
 				FC702AAE1ED8093C00C11174 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

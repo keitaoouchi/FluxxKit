@@ -28,7 +28,7 @@ class ViewController: UIViewController {
 
   deinit {
     Dispatcher.shared.unregister(middleware: ViewModel.SearchMiddleware.self)
-    Dispatcher.shared.unregister(identifier: store.identifier)
+    Dispatcher.shared.unregister(store: store)
   }
 
 }

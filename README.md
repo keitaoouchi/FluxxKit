@@ -17,6 +17,14 @@ Porting [facebook's flux implementation](https://github.com/facebook/flux) in Sw
 
 We have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful things could be implemented as Observable or Stream, and ViewController could bind and react to them.
 
+## Example
+
+To run the example project, clone the repo, and run `pod install` from the Example directory first.
+
+More complicated real world example like below is [here](https://github.com/keitaoouchi/FluxxKitExample).
+
+![GIF](https://raw.githubusercontent.com/keitaoouchi/FluxxKitExample/master/sample.gif "GIF")
+
 ### Getting Started
 
 1. State
@@ -105,11 +113,15 @@ We have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful 
   }
   ```
 
-### Scenario
+### Architecture
 
-(nice diagram here :ghost:)
+(:ghost: nice diagram here :ghost:)
 
 #### Flux
+
+```
+View -> Action -> Dispatcher -> (Middleware) -> Store -> Reducer -> Observable
+```
 
 - When a user interacts with a View(Controller), it propagates an `Action`
 - through a central `Dispatcher`,
@@ -119,16 +131,12 @@ We have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful 
 
 #### Reactive Programming
 
+```
+Observable ---> View
+```
+
 - ViewController subscribes Store's `Observable` properties,
 - and react to it.
-
-## Example
-
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
-
-More complicated real world example is [here](https://github.com/keitaoouchi/FluxxKitExample).
-
-![GIF](https://raw.githubusercontent.com/keitaoouchi/FluxxKitExample/master/sample.gif "GIF")
 
 ## Requirements
 

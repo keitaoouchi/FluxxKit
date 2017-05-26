@@ -26,16 +26,19 @@ public final class Dispatcher {
     self.stores.append(store)
   }
 
-  public func unregister(store: StoreType) {
-    precondition(Thread.isMainThread)
-
-    self.unregister(store: store.identifier)
+  @available(*, introduced: 1.0.0, deprecated: 1.0.2, message: "Please use `unregister(store identifier: String)` instead")
+  public func unregister(identifier: String) {
+    self.unregister(store: identifier)
   }
 
-  public func unregister(store storeIdentifier: String) {
+  public func unregister(store identifier: String) {
     precondition(Thread.isMainThread)
 
-    self.stores = self.stores.filter { $0.identifier != storeIdentifier }
+    self.stores = self.stores.filter { $0.identifier != identifier }
+  }
+
+  public func unregister(store: StoreType) {
+    self.unregister(store: store.identifier)
   }
 
   public func unregister(store storeType: StoreType.Type) {

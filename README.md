@@ -9,13 +9,9 @@
 
 ## Overview
 
-Unidirectional data flow for reactive programming in iOS.
+Unidirectional data flow for reactive programming in iOS. Flux and Reactive Programming.
 
-Porting [facebook's flux implementation](https://github.com/facebook/flux) in Swift, except callback called when store changes.
-
-##### Why no callback?
-
-We have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful things could be implemented as Observable or Stream, and ViewController could bind and react to them.
+FluxxKit is a porting [facebook's flux implementation](https://github.com/facebook/flux) in Swift.
 
 ## Example
 
@@ -116,6 +112,10 @@ More complicated real world example like below is [here](https://github.com/keit
 ### Architecture
 
 (:ghost: nice diagram here :ghost:)
+
+##### FLUX for Reactive Programming
+
+FluxxKit would not emit any event when state change like [flux](https://github.com/facebook/flux/blob/962bd9516e3fe2cf2050d7a9c27befa431c5dbca/src/stores/FluxStore.js#L78). Instead, we have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful things could be implemented as Observable or Stream, and ViewController could bind and react to them.
 
 #### Flux
 

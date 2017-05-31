@@ -30,7 +30,7 @@ More complicated real world example like below is [here](https://github.com/keit
   import RxSwift
 
   final class ViewModel: StateType {
-    var count = Observable<Int>(0)
+    var count = Variable<Int>(0)
   }
   ```
 
@@ -84,7 +84,7 @@ More complicated real world example like below is [here](https://github.com/keit
 
       Dispatcher.shared.register(store: self.store)
 
-      store.state.count.asObservable().onserveOn(MainScheduler.instance)
+      store.state.count.asObservable().observeOn(MainScheduler.instance)
         .subscribe(onNext: { [weak self] count in
           self?.counterLabel.text = "\(count)"
         })

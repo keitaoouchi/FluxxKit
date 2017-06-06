@@ -1,9 +1,9 @@
 PODS:
-  - FluxxKit (1.0.2)
-  - Himotoki (3.0.1)
-  - RxCocoa (3.4.1):
-    - RxSwift (~> 3.4)
-  - RxSwift (3.4.1)
+  - FluxxKit (1.1.0)
+  - Himotoki (3.1.0)
+  - RxCocoa (4.0.0):
+    - RxSwift (~> 4.0)
+  - RxSwift (4.0.0)
 
 DEPENDENCIES:
   - FluxxKit (from `./../../FluxxKit/`)
@@ -16,10 +16,10 @@ EXTERNAL SOURCES:
     :path: "./../../FluxxKit/"
 
 SPEC CHECKSUMS:
-  FluxxKit: b49c73a5d1957096d6fc6a1bc32b9291ed8ea043
-  Himotoki: 85fda41d4d0e14f7228317a3b474175cdfb8f515
-  RxCocoa: a8a5f1d061d0043e28f56976829f31ce63e8eb09
-  RxSwift: 656f8fbeca5bc372121a72d9ebdd3cd3bc0ffade
+  FluxxKit: 8a56fcdb49c5e1204a19d5036732fb84dfd65a6b
+  Himotoki: b09643fa5456d49bda43d0fb4e30dfa79e37f72f
+  RxCocoa: d62846ca96495d862fa4c59ea7d87e5031d7340e
+  RxSwift: fd680d75283beb5e2559486f3c0ff852f0d35334
 
 PODFILE CHECKSUM: 749a9699c632122dbbf4de05a7f217fbed1aa7e2
 

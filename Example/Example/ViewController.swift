@@ -55,7 +55,7 @@ private extension ViewController {
             action: ViewModel.Action.search(text: text)
           )
         }
-      ).addDisposableTo(self.disposeBag)
+      ).disposed(by: self.disposeBag)
   }
 
   func bind(state: ViewModel) {
@@ -80,6 +80,6 @@ private extension ViewController {
             self?.repositoryViewController?.tableView.reloadData()
           }
         }
-      ).addDisposableTo(self.disposeBag)
+      ).disposed(by: self.disposeBag)
   }
 }

@@ -4,6 +4,7 @@ import Nimble
 
 class MiddlewareSpec: QuickSpec {
 
+  //swiftlint:disable function_body_length next
   override func spec() {
 
     var store: Store<DummyState, Action>!
@@ -68,9 +69,9 @@ class MiddlewareSpec: QuickSpec {
           expect(middleware.afterCallCount).toEventually(equal(1))
           expect(store.state.totalCallCount).toEventually(equal(1))
         }
-        
+
       }
-      
+
     }
 
     describe("both .before/.afer(dispatch action ...)") {
@@ -100,13 +101,12 @@ class MiddlewareSpec: QuickSpec {
           expect(middleware.afterCallCount).toEventually(equal(2))
           expect(store.state.totalCallCount).toEventually(equal(1))
         }
-        
+
       }
     }
 
   }
 
-  
 }
 
 // MARK: - Test target
@@ -122,11 +122,11 @@ private extension MiddlewareSpec {
     var afterCallCount = 0
 
     func before(dispatch action: ActionType, to store: StoreType) {
-      self.beforeCallCount = self.beforeCallCount + 1
+      self.beforeCallCount += 1
     }
 
     func after(dispatch action: ActionType, to store: StoreType) {
-      self.afterCallCount = self.afterCallCount + 1
+      self.afterCallCount += 1
     }
   }
 
@@ -138,7 +138,7 @@ private extension MiddlewareSpec {
     override func reduce(state: MiddlewareSpec.DummyState, action: MiddlewareSpec.Action) {
       switch action {
       case .dummy:
-        state.totalCallCount = state.totalCallCount + 1
+        state.totalCallCount += 1
       }
     }
   }

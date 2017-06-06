@@ -1,7 +1,14 @@
-osx_image: xcode8.3
-language: swift
+osx_image: xcode9
+language: objective-c
+before_install:
+  - brew update
+  - brew outdated carthage || brew upgrade carthage
+  - cd Example && bundle install && bundle exec pod repo update && bundle exec pod install && cd ../
+install:
+  - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
 script:
   - swiftlint
-  - bundle exec pod lib lint
-  - carthage bootstrap --platform ios
-  - xcodebuild test -scheme FluxxKitTests -configuration Debug -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 7 Plus" | xcpretty -c
+  - set -o pipefail && xcodebuild build -workspace Example/Example.xcworkspace -scheme Example -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO | xcpretty
+  - pod lib lint --quick
+  - carthage bootstrap --platform iOS
+  - xcodebuild test -scheme FluxxKitTests -configuration Debug -sdk iphonesimulator -destination "platform=iOS Simulator,name=iPhone 8" | xcpretty -c

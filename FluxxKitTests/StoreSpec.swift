@@ -52,9 +52,9 @@ class StoreSpec: QuickSpec {
       }
 
     }
-    
+
   }
-  
+
 }
 
 private extension StoreSpec {
@@ -73,7 +73,7 @@ private extension StoreSpec {
 
   class SpyReducer: Reducer<Spy, RespondableAction> {
     override func reduce(state: StoreSpec.Spy, action: StoreSpec.RespondableAction) {
-      state.callCount = state.callCount + 1
+      state.callCount += 1
     }
   }
 

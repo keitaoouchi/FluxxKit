@@ -2,7 +2,7 @@ import Foundation
 import Himotoki
 import RxSwift
 
-struct Repository: Decodable {
+struct Repository: Himotoki.Decodable {
   let name: String
 
   static func decode(_ e: Extractor) throws -> Repository {

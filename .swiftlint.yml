@@ -4,6 +4,7 @@ excluded:
   - Carthage
 included:
   - FluxxKit/
+  - FluxxKitTests/
   - Example/Example/
 variable_name:
   excluded:

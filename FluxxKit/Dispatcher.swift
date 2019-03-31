@@ -26,11 +26,6 @@ public final class Dispatcher {
     self.stores.append(store)
   }
 
-  @available(*, introduced: 1.0.0, deprecated: 1.0.2, obsoleted: 1.1.0, message: "Please use `unregister(store identifier: String)` instead")
-  public func unregister(identifier: String) {
-    self.unregister(store: identifier)
-  }
-
   public func unregister(store identifier: String) {
     precondition(Thread.isMainThread)
 

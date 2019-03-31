@@ -1,11 +1,11 @@
-osx_image: xcode9.3
+osx_image: xcode10.2
 language: objective-c
 before_install:
   - brew update
   - brew outdated carthage || brew upgrade carthage
   - cd Example && bundle install && bundle exec pod repo update && bundle exec pod install && cd ../
 install:
-  - gem install xcpretty --no-rdoc --no-ri --no-document --quiet
+  - gem install xcpretty
 script:
   - swiftlint
   - set -o pipefail && xcodebuild build -workspace Example/Example.xcworkspace -scheme Example -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO | xcpretty

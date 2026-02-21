@@ -21,10 +21,7 @@ public final class Store<S: StateType, A: ActionType>: StoreType {
   }
 
   public func responds(to action: ActionType) -> Bool {
-    if action is A {
-      return true
-    }
-    return false
+    return action is A
   }
 
 }

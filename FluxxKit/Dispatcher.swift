@@ -48,12 +48,15 @@ public final class Dispatcher {
   }
 
   public func dispatch(action: ActionType, identifier: String? = nil) {
-    var stores = self.stores
     if let identifier = identifier {
-      stores = self.stores.filter { $0.identifier == identifier }
-    }
-    for store in stores where store.responds(to: action) {
-      execute(action: action, in: store)
+      if let store = self.stores.first(where: { $0.identifier == identifier }),
+         store.responds(to: action) {
+        execute(action: action, in: store)
+      }
+    } else {
+      for store in stores where store.responds(to: action) {
+        execute(action: action, in: store)
+      }
     }
   }
 

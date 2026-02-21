@@ -1,3 +1,4 @@
+@MainActor
 open class Reducer<S: StateType, A: ActionType> {
   public init() {}
 

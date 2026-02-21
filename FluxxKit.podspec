@@ -8,5 +8,6 @@ Pod::Spec.new do |s|
   s.source        = { :git => "https://github.com/keitaoouchi/FluxxKit.git", :tag => "#{s.version}" }
   s.source_files  = "FluxxKit/*.{swift,h}"
   s.frameworks    = "Foundation"
-  s.ios.deployment_target = "8.0"
+  s.swift_versions = ["6.0"]
+  s.ios.deployment_target = "16.0"
 end

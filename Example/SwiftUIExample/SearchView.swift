@@ -6,6 +6,7 @@ struct SearchView: View {
     reducer: SearchState.Reducer()
   )
   @State private var query: String = ""
+  @State private var isRegistered = false
 
   var body: some View {
     NavigationStack {
@@ -32,12 +33,15 @@ struct SearchView: View {
       store.dispatch(.search(text: newValue))
     }
     .onAppear {
+      guard !isRegistered else { return }
       Dispatcher.shared.register(middleware: SearchMiddleware())
       store.register()
+      isRegistered = true
     }
     .onDisappear {
       Dispatcher.shared.unregister(middleware: SearchMiddleware.self)
       store.unregister()
+      isRegistered = false
     }
   }
 }

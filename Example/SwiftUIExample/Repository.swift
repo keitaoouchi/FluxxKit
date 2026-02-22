@@ -1,10 +1,11 @@
 import Foundation
 
 struct Repository: Codable, Identifiable {
-  let id = UUID()
+  let id: Int
   let fullName: String
 
   enum CodingKeys: String, CodingKey {
+    case id
     case fullName = "full_name"
   }
 }

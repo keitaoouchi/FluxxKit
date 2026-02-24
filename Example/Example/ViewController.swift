@@ -1,7 +1,6 @@
 import UIKit
+import Combine
 import FluxxKit
-import RxSwift
-import RxCocoa
 
 class ViewController: UIViewController {
 
@@ -12,17 +11,19 @@ class ViewController: UIViewController {
   @IBOutlet weak var searchBar: UISearchBar!
 
   var repositoryViewController: RepositoryViewController?
-  var disposeBag = DisposeBag()
+  private var cancellables = Set<AnyCancellable>()
+  private let searchSubject = PassthroughSubject<String, Never>()
   var store = Store<ViewModel, ViewModel.Action>(
     reducer: ViewModel.Reducer()
   )
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    searchBar.delegate = self
     Dispatcher.shared.register(middleware: ViewModel.SearchMiddleware())
     Dispatcher.shared.register(store: self.store)
-    bind(state: store.state)
-    bind(searchBar: searchBar)
+    bindSearchBar()
+    bindState(store.state)
     repositoryViewController = RepositoryViewController.make(viewModel: store.state)
   }
 
@@ -33,53 +34,49 @@ class ViewController: UIViewController {
 
 }
 
+// MARK: - UISearchBarDelegate
+extension ViewController: UISearchBarDelegate {
+
+  func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    let encoded = searchText.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+    searchSubject.send(encoded)
+  }
+}
+
 // MARK: - Bindings
 private extension ViewController {
 
-  func bind(searchBar: UISearchBar) {
-    searchBar
-      .rx
-      .text
-      .orEmpty
-      .map {
-        $0.addingPercentEncoding(
-          withAllowedCharacters: .alphanumerics
-        ) ?? ""
+  func bindSearchBar() {
+    searchSubject
+      .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+      .removeDuplicates()
+      .sink { text in
+        Dispatcher.shared.dispatch(
+          action: ViewModel.Action.search(text: text)
+        )
       }
-      .debounce(0.3, scheduler: MainScheduler.instance)
-      .distinctUntilChanged()
-      .observeOn(MainScheduler.instance)
-      .subscribe(
-        onNext: { text in
-          Dispatcher.shared.dispatch(
-            action: ViewModel.Action.search(text: text)
-          )
-        }
-      ).disposed(by: self.disposeBag)
+      .store(in: &cancellables)
   }
 
-  func bind(state: ViewModel) {
-    state
-      .viewState
-      .asObservable()
-      .observeOn(MainScheduler.instance)
-      .subscribe(
-        onNext: { [weak self] viewState in
-          switch viewState {
-          case .requesting:
-            self?.contentsView.fill(with: self?.requestingView)
+  func bindState(_ state: ViewModel) {
+    state.$viewState
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] viewState in
+        switch viewState {
+        case .requesting:
+          self?.contentsView.fill(with: self?.requestingView)
 
-          case .failed:
-            self?.contentsView.fill(with: self?.failedView)
+        case .failed:
+          self?.contentsView.fill(with: self?.failedView)
 
-          case .empty:
-            self?.contentsView.fill(with: self?.emptyView)
+        case .empty:
+          self?.contentsView.fill(with: self?.emptyView)
 
-          case .done:
-            self?.contentsView.fill(with: self?.repositoryViewController?.tableView)
-            self?.repositoryViewController?.tableView.reloadData()
-          }
+        case .done:
+          self?.contentsView.fill(with: self?.repositoryViewController?.tableView)
+          self?.repositoryViewController?.tableView.reloadData()
         }
-      ).disposed(by: self.disposeBag)
+      }
+      .store(in: &cancellables)
   }
 }

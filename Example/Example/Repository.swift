@@ -1,63 +1,40 @@
 import Foundation
-import Himotoki
-import RxSwift
 
-struct Repository: Himotoki.Decodable {
-  let name: String
+struct Repository: Codable, Identifiable {
+  let id: Int
+  let fullName: String
 
-  static func decode(_ e: Extractor) throws -> Repository {
-    return try Repository(
-      name: e <| "full_name"
-    )
+  enum CodingKeys: String, CodingKey {
+    case id
+    case fullName = "full_name"
   }
 }
 
 // MARK: - API
 extension Repository {
 
+  struct SearchResponse: Codable {
+    let items: [Repository]
+  }
+
   enum RepositoryError: Error {
-    case decodeError
     case queryError
   }
 
-  static func search(text: String) -> Observable<[Repository]> {
-    return Observable.create { observer in
+  static func search(text: String) async throws -> [Repository] {
+    var components = URLComponents(string: "https://api.github.com/search/repositories")
+    components?.queryItems = [
+      .init(name: "q", value: text),
+      .init(name: "sort", value: "stars"),
+      .init(name: "order", value: "desc")
+    ]
 
-      if let url = URL(string: "https://api.github.com/search/repositories?q=\(text)&sort=stars&order=desc") {
-
-        let session = URLSession(configuration: .default)
-        let task = session.dataTask(with: url) { data, _, error in
-          if let error = error {
-            observer.onError(error)
-            return
-          }
-
-          if let data = data,
-            let json = try? JSONSerialization.jsonObject(
-              with: data,
-              options: JSONSerialization.ReadingOptions.allowFragments
-            ),
-            let repositories: [Repository] = try? decodeArray(json, rootKeyPath: "items") {
-
-            observer.onNext(repositories)
-            observer.onCompleted()
-          } else {
-            observer.onError(RepositoryError.decodeError)
-          }
-        }
-        task.resume()
-
-        return Disposables.create {
-          if task.state == .running {
-            task.cancel()
-          }
-        }
-
-      } else {
-        observer.onError(RepositoryError.queryError)
-        return Disposables.create {}
-      }
-
+    guard let url = components?.url else {
+      throw RepositoryError.queryError
     }
+
+    let (data, _) = try await URLSession.shared.data(from: url)
+    let decoded = try JSONDecoder().decode(SearchResponse.self, from: data)
+    return decoded.items
   }
 }

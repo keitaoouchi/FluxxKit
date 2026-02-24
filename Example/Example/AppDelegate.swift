@@ -1,7 +1,7 @@
 import UIKit
 import FluxxKit
 
-@UIApplicationMain
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
   var window: UIWindow?

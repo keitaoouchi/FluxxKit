@@ -1,136 +1,199 @@
 # FluxxKit
 
-[![Version](https://img.shields.io/cocoapods/v/FluxxKit.svg?style=flat)](http://cocoapods.org/pods/FluxxKit)
-[![License](https://img.shields.io/cocoapods/l/FluxxKit.svg?style=flat)](http://cocoapods.org/pods/FluxxKit)
-[![Platform](https://img.shields.io/cocoapods/p/FluxxKit.svg?style=flat)](http://cocoapods.org/pods/FluxxKit)
+Lightweight Flux-style state management for SwiftUI, built on `@Observable` and Swift Concurrency.
 
-## Overview
-
-FluxxKit is a lightweight Flux-style state container for iOS.
-
-- Unidirectional data flow (`View -> Action -> Dispatcher -> Store -> Reducer -> State`)
-- Reactive-library agnostic core
-- **Recommended integration: Combine + SwiftUI**
+- Zero external dependencies
+- Swift 6 strict concurrency safe
+- Reducer as a composable function value (not a protocol)
+- `Relay` type for explicit global state coordination
 
 ## Requirements
 
 | Target | Version |
 |---|---|
-| iOS | 16.0+ |
+| iOS | 17.0+ |
+| macOS | 14.0+ |
 | Swift | 6.0+ |
 
-## Getting Started (Combine + SwiftUI)
+## Installation
 
-### 1. Define a state
+### Swift Package Manager
 
 ```swift
-import Combine
+dependencies: [
+    .package(url: "https://github.com/nicoryo/FluxxKit.git", from: "2.0.0")
+]
+```
+
+## Quick Start
+
+### 1. Define State and Action
+
+```swift
 import FluxxKit
 
-@MainActor
-final class CounterState: StateType, ObservableObject {
-  @Published var count: Int = 0
+struct CounterState: StateType {
+    var count: Int = 0
+}
 
-  required init() {}
+enum CounterAction: ActionType {
+    case increment
+    case decrement
 }
 ```
 
-### 2. Define actions
+### 2. Define a Reducer
+
+Reducers are pure functions — no protocol conformance needed.
 
 ```swift
-extension CounterState {
-  enum Action: ActionType {
-    case plus
-    case minus
-  }
-}
-```
-
-### 3. Define a reducer
-
-```swift
-extension CounterState {
-  final class Reducer: FluxxKit.Reducer<CounterState, Action> {
-    override func reduce(state: CounterState, action: Action) {
-      switch action {
-      case .plus:
-        state.count += 1
-      case .minus:
-        state.count -= 1
-      }
+let counterReducer = LocalReducer<CounterState, CounterAction> { state, action in
+    switch action {
+    case .increment:
+        return (CounterState(count: state.count + 1), .none)
+    case .decrement:
+        return (CounterState(count: state.count - 1), .none)
     }
-  }
 }
 ```
 
-### 4. Bind in SwiftUI
+### 3. Use in SwiftUI
 
 ```swift
-import SwiftUI
-import FluxxKit
-
 struct CounterView: View {
-  @StateObject private var store = StoreObject<CounterState, CounterState.Action>(
-    reducer: CounterState.Reducer()
-  )
+    @State private var store = Store(
+        initialState: CounterState(),
+        reducer: counterReducer
+    )
 
-  var body: some View {
-    VStack(spacing: 16) {
-      Text("\(store.state.count)")
-        .font(.system(size: 48, weight: .bold, design: .rounded))
-
-      HStack {
-        Button("-") { store.dispatch(.minus) }
-        Button("+") { store.dispatch(.plus) }
-      }
-      .buttonStyle(.borderedProminent)
+    var body: some View {
+        VStack {
+            Text("\(store.state.count)")
+            Button("+") { store.dispatch(.increment) }
+            Button("-") { store.dispatch(.decrement) }
+        }
     }
-    .padding()
-    .onAppear { store.register() }
-    .onDisappear { store.unregister() }
-  }
+}
+```
+
+## Side Effects
+
+Use `Effect.run` for async operations. The dispatch function is injected so actions flow back through the store.
+
+```swift
+enum SearchAction: ActionType {
+    case search(query: String)
+    case loaded([Result])
+}
+
+let searchReducer = LocalReducer<SearchState, SearchAction> { state, action in
+    switch action {
+    case .search(let query):
+        let effect = Effect<SearchAction>.run { dispatch in
+            let results = await API.search(query)
+            await dispatch(.loaded(results))
+        }
+        return (state, effect)
+    case .loaded(let results):
+        return (SearchState(results: results), .none)
+    }
+}
+```
+
+Use `.many` to combine multiple effects:
+
+```swift
+return (newState, .many([effect1, effect2]))
+```
+
+## Global State Coordination with Relay
+
+`Relay` bridges a local store's effects to a global store. The type signature makes cross-store communication explicit and traceable.
+
+### Define a global store
+
+```swift
+struct AppState: StateType {
+    var loggedIn: Bool = true
+}
+
+enum AppAction: ActionType {
+    case logout
+}
+
+let appReducer = LocalReducer<AppState, AppAction> { state, action in
+    switch action {
+    case .logout:
+        return (AppState(loggedIn: false), .none)
+    }
+}
+```
+
+### Create a local store with Relay
+
+```swift
+// The type Reducer<ProfileState, ProfileAction, AppAction> makes it
+// explicit that this reducer can dispatch to the global store.
+let profileReducer = Reducer<ProfileState, ProfileAction, AppAction> { state, action, relay in
+    switch action {
+    case .logoutTapped:
+        let effect = Effect<ProfileAction>.run { _ in
+            await relay.dispatch(.logout)
+        }
+        return (state, effect)
+    }
+}
+```
+
+### Wire it up in SwiftUI
+
+```swift
+@main
+struct MyApp: App {
+    @State private var appStore = Store(
+        initialState: AppState(),
+        reducer: appReducer
+    )
+
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .environment(appStore)
+        }
+    }
+}
+
+struct ProfileView: View {
+    @Environment(Store<AppState, AppAction>.self) var appStore
+    @State private var store: Store<ProfileState, ProfileAction>?
+
+    var body: some View {
+        Group {
+            if let store {
+                Button("Logout") { store.dispatch(.logoutTapped) }
+            }
+        }
+        .onAppear {
+            store = Store(
+                initialState: ProfileState(),
+                reducer: profileReducer,
+                relay: .from(appStore)
+            )
+        }
+    }
 }
 ```
 
 ## Architecture
 
-### Flux
-
 ```
-View -> Action -> Dispatcher -> (Middleware) -> Store -> Reducer -> State
-```
-
-- User interaction dispatches an `Action`.
-- `Dispatcher` routes actions to matching stores.
-- `Reducer` performs state transition.
-- UI updates by observing state (for example via `@Published`).
-
-### Reactive layer
-
-FluxxKit does not force a specific reactive framework.
-
-- Recommended: **Combine / SwiftUI**
-- Also possible: Any stream/observation mechanism your project uses.
-
-## Installation
-
-FluxxKit supports CocoaPods and Carthage.
-
-### CocoaPods
-
-```ruby
-pod "FluxxKit"
+View → Action → Store.dispatch → Reducer(State, Action) → (NewState, Effect)
+                                                                ↓
+                                                          Effect.run → dispatch(Action)
 ```
 
-### Carthage
-
-```
-github "keitaoouchi/FluxxKit"
-```
-
-## Author
-
-keitaoouchi, keita.oouchi@gmail.com
+- `LocalReducer<State, Action>` — no global coordination (uses `Never` for GlobalAction)
+- `Reducer<State, Action, GlobalAction>` — can dispatch to a global store via `Relay`
 
 ## License
 

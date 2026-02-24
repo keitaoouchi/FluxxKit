@@ -43,8 +43,7 @@ class ViewController: UIViewController {
 extension ViewController: UISearchBarDelegate {
 
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-    let encoded = searchText.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
-    searchSubject.send(encoded)
+    searchSubject.send(searchText)
   }
 }
 

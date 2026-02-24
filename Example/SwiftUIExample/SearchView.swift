@@ -6,6 +6,7 @@ struct SearchView: View {
     reducer: SearchState.Reducer()
   )
   @State private var query: String = ""
+  @State private var searchTask: Task<Void, Never>?
   @State private var isRegistered = false
 
   var body: some View {
@@ -30,7 +31,12 @@ struct SearchView: View {
     }
     .searchable(text: $query)
     .onChange(of: query) { _, newValue in
-      store.dispatch(.search(text: newValue))
+      searchTask?.cancel()
+      searchTask = Task {
+        try? await Task.sleep(nanoseconds: 300_000_000)
+        guard !Task.isCancelled else { return }
+        store.dispatch(.search(text: newValue))
+      }
     }
     .onAppear {
       guard !isRegistered else { return }

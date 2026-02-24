@@ -30,20 +30,25 @@ extension ViewModel {
   // Handle async action
   final class SearchMiddleware: MiddlewareType {
 
+    private var currentTask: Task<Void, Never>?
+
     func before(dispatch action: ActionType, to store: StoreType) {
       guard case Action.search(let text) = action else { return }
 
       let query = text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
       guard !query.isEmpty else {
+        currentTask?.cancel()
         store.dispatch(action: Action.reset)
         return
       }
 
       store.dispatch(action: Action.transition(to: .requesting))
 
-      Task {
+      currentTask?.cancel()
+      currentTask = Task {
         do {
           let repositories = try await Repository.search(text: query)
+          guard !Task.isCancelled else { return }
 
           if repositories.isEmpty {
             store.dispatch(action: Action.transition(to: .empty))
@@ -52,6 +57,7 @@ extension ViewModel {
             store.dispatch(action: Action.transition(to: .done))
           }
         } catch {
+          guard !Task.isCancelled else { return }
           store.dispatch(action: Action.transition(to: .failed))
         }
       }

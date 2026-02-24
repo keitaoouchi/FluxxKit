@@ -13,7 +13,7 @@ class ViewController: UIViewController {
   var repositoryViewController: RepositoryViewController?
   private var cancellables = Set<AnyCancellable>()
   private let searchSubject = PassthroughSubject<String, Never>()
-  private nonisolated(unsafe) var storeIdentifier: String = ""
+  private let middleware = ViewModel.SearchMiddleware()
   var store = Store<ViewModel, ViewModel.Action>(
     reducer: ViewModel.Reducer()
   )
@@ -21,20 +21,17 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     searchBar.delegate = self
-    Dispatcher.shared.register(middleware: ViewModel.SearchMiddleware())
+    Dispatcher.shared.register(middleware: middleware)
     Dispatcher.shared.register(store: self.store)
-    storeIdentifier = store.identifier
     bindSearchBar()
     bindState(store.state)
     repositoryViewController = RepositoryViewController.make(viewModel: store.state)
   }
 
-  deinit {
-    let id = storeIdentifier
-    Task { @MainActor in
-      Dispatcher.shared.unregister(middleware: ViewModel.SearchMiddleware.self)
-      Dispatcher.shared.unregister(store: id)
-    }
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    Dispatcher.shared.unregister(middleware: middleware)
+    Dispatcher.shared.unregister(store: store)
   }
 
 }

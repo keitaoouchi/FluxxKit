@@ -17,6 +17,10 @@ public final class Dispatcher {
     self.middlewares = self.middlewares.filter { type(of: $0) != middlewareType }
   }
 
+  public func unregister(middleware instance: MiddlewareType) {
+    self.middlewares = self.middlewares.filter { $0 !== instance }
+  }
+
   public func register(store: StoreType) {
     self.stores.append(store)
   }

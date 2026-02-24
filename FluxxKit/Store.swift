@@ -1,16 +1,18 @@
+@MainActor
 public final class Store<S: StateType, A: ActionType>: StoreType {
 
   public var identifier: String = Util.uuid()
 
   private let reducer: Reducer<S, A>
 
-  private var _state: S = S()
+  private var _state: S
 
   public var state: S {
     return self._state
   }
 
-  public init(reducer: Reducer<S, A>) {
+  public init(initialState: S = S(), reducer: Reducer<S, A>) {
+    self._state = initialState
     self.reducer = reducer
   }
 

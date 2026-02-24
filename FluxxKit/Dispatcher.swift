@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public final class Dispatcher {
 
   public static let shared = Dispatcher()
@@ -9,20 +10,18 @@ public final class Dispatcher {
   private var middlewares: [MiddlewareType] = []
 
   public func register(middleware: MiddlewareType) {
-    precondition(Thread.isMainThread)
-
     self.middlewares.append(middleware)
   }
 
   public func unregister(middleware middlewareType: MiddlewareType.Type) {
-    precondition(Thread.isMainThread)
-
     self.middlewares = self.middlewares.filter { type(of: $0) != middlewareType }
   }
 
-  public func register(store: StoreType) {
-    precondition(Thread.isMainThread)
+  public func unregister(middleware instance: MiddlewareType) {
+    self.middlewares = self.middlewares.filter { $0 !== instance }
+  }
 
+  public func register(store: StoreType) {
     self.stores.append(store)
   }
 
@@ -32,8 +31,6 @@ public final class Dispatcher {
   }
 
   public func unregister(store identifier: String) {
-    precondition(Thread.isMainThread)
-
     self.stores = self.stores.filter { $0.identifier != identifier }
   }
 
@@ -42,13 +39,11 @@ public final class Dispatcher {
   }
 
   public func unregister(store storeType: StoreType.Type) {
-    precondition(Thread.isMainThread)
-
     self.stores = self.stores.filter { type(of: $0) != storeType }
   }
 
   public func dispatch(action: ActionType, identifier: String? = nil) {
-    if let identifier = identifier {
+    if let identifier {
       if let store = self.stores.first(where: { $0.identifier == identifier }),
          store.responds(to: action) {
         execute(action: action, in: store)
@@ -58,6 +53,11 @@ public final class Dispatcher {
         execute(action: action, in: store)
       }
     }
+  }
+
+  public func reset() {
+    stores.removeAll()
+    middlewares.removeAll()
   }
 
   private func execute(action: ActionType, in store: StoreType) {

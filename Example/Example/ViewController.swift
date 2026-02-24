@@ -1,7 +1,6 @@
 import UIKit
+import Combine
 import FluxxKit
-import RxSwift
-import RxCocoa
 
 class ViewController: UIViewController {
 
@@ -12,74 +11,81 @@ class ViewController: UIViewController {
   @IBOutlet weak var searchBar: UISearchBar!
 
   var repositoryViewController: RepositoryViewController?
-  var disposeBag = DisposeBag()
+  private var cancellables = Set<AnyCancellable>()
+  private let searchSubject = PassthroughSubject<String, Never>()
+  private let middleware = ViewModel.SearchMiddleware()
+  private var isRegistered = false
   var store = Store<ViewModel, ViewModel.Action>(
     reducer: ViewModel.Reducer()
   )
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    Dispatcher.shared.register(middleware: ViewModel.SearchMiddleware())
-    Dispatcher.shared.register(store: self.store)
-    bind(state: store.state)
-    bind(searchBar: searchBar)
+    searchBar.delegate = self
+    bindSearchBar()
+    bindState(store.state)
     repositoryViewController = RepositoryViewController.make(viewModel: store.state)
   }
 
-  deinit {
-    Dispatcher.shared.unregister(middleware: ViewModel.SearchMiddleware.self)
-    Dispatcher.shared.unregister(store: store)
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    guard !isRegistered else { return }
+    Dispatcher.shared.register(middleware: middleware)
+    Dispatcher.shared.register(store: self.store)
+    isRegistered = true
   }
 
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    Dispatcher.shared.unregister(middleware: middleware)
+    Dispatcher.shared.unregister(store: store)
+    isRegistered = false
+  }
+
+}
+
+// MARK: - UISearchBarDelegate
+extension ViewController: UISearchBarDelegate {
+
+  func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    searchSubject.send(searchText)
+  }
 }
 
 // MARK: - Bindings
 private extension ViewController {
 
-  func bind(searchBar: UISearchBar) {
-    searchBar
-      .rx
-      .text
-      .orEmpty
-      .map {
-        $0.addingPercentEncoding(
-          withAllowedCharacters: .alphanumerics
-        ) ?? ""
+  func bindSearchBar() {
+    searchSubject
+      .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+      .removeDuplicates()
+      .sink { text in
+        Dispatcher.shared.dispatch(
+          action: ViewModel.Action.search(text: text)
+        )
       }
-      .debounce(0.3, scheduler: MainScheduler.instance)
-      .distinctUntilChanged()
-      .observeOn(MainScheduler.instance)
-      .subscribe(
-        onNext: { text in
-          Dispatcher.shared.dispatch(
-            action: ViewModel.Action.search(text: text)
-          )
-        }
-      ).disposed(by: self.disposeBag)
+      .store(in: &cancellables)
   }
 
-  func bind(state: ViewModel) {
-    state
-      .viewState
-      .asObservable()
-      .observeOn(MainScheduler.instance)
-      .subscribe(
-        onNext: { [weak self] viewState in
-          switch viewState {
-          case .requesting:
-            self?.contentsView.fill(with: self?.requestingView)
+  func bindState(_ state: ViewModel) {
+    state.$viewState
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] viewState in
+        switch viewState {
+        case .requesting:
+          self?.contentsView.fill(with: self?.requestingView)
 
-          case .failed:
-            self?.contentsView.fill(with: self?.failedView)
+        case .failed:
+          self?.contentsView.fill(with: self?.failedView)
 
-          case .empty:
-            self?.contentsView.fill(with: self?.emptyView)
+        case .empty:
+          self?.contentsView.fill(with: self?.emptyView)
 
-          case .done:
-            self?.contentsView.fill(with: self?.repositoryViewController?.tableView)
-            self?.repositoryViewController?.tableView.reloadData()
-          }
+        case .done:
+          self?.contentsView.fill(with: self?.repositoryViewController?.tableView)
+          self?.repositoryViewController?.tableView.reloadData()
         }
-      ).disposed(by: self.disposeBag)
+      }
+      .store(in: &cancellables)
   }
 }

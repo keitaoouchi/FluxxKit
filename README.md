@@ -1,153 +1,120 @@
 # FluxxKit
 
-[![CI Status](http://img.shields.io/travis/keitaoouchi/FluxxKit.svg?style=flat)](https://travis-ci.org/keitaoouchi/FluxxKit)
-[![Swift 4.0](https://img.shields.io/badge/Swift-4.0-orange.svg?style=flat)](https://swift.org/)
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![Version](https://img.shields.io/cocoapods/v/FluxxKit.svg?style=flat)](http://cocoapods.org/pods/FluxxKit)
 [![License](https://img.shields.io/cocoapods/l/FluxxKit.svg?style=flat)](http://cocoapods.org/pods/FluxxKit)
 [![Platform](https://img.shields.io/cocoapods/p/FluxxKit.svg?style=flat)](http://cocoapods.org/pods/FluxxKit)
 
 ## Overview
 
-Unidirectional data flow for reactive programming in iOS. Flux and Reactive Programming.
+FluxxKit is a lightweight Flux-style state container for iOS.
 
-FluxxKit is a porting [facebook's flux implementation](https://github.com/facebook/flux) in Swift.
-
-## Example
-
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
-
-More complicated real world example like below is [here](https://github.com/keitaoouchi/FluxxKitExample).
-
-![GIF](https://raw.githubusercontent.com/keitaoouchi/FluxxKitExample/master/sample.gif "GIF")
-
-### Getting Started
-
-1. State
-
-  ```swift
-  import FluxxKit
-  import RxSwift
-
-  final class ViewModel: StateType {
-    var count = Variable<Int>(0)
-  }
-  ```
-
-2. Action
-
-  ```swift
-  extension ViewModel {
-    enum Action: ActionType {
-      case plus
-      case minus
-    }
-  }
-  ```
-
-3. Reducer
-
-  ```swift
-  extension ViewModel {
-    final class Reducer: FluxxKit.Reducer<ViewModel, Action> {
-      override func reduce(state: ViewModel, action: Action) {
-
-        switch action {
-        case .plus:
-          state.count.value = state.count + 1
-        case .minus:
-          state.count.value = state.count - 1
-        }
-      }
-    }
-  }
-  ```
-
-4. View
-
-  Create store and register it to dispatcher, and bind store's state:
-  ```swift
-  import FluxxKit
-  import RxSWift
-
-  final class ViewController: UIViewController {
-
-    @IBOutlet var counterLabel: UILabel!
-    @IBOutlet var plusButton: UIButton!
-    @IBOutlet var minusButton: UIButton!
-    var store = Store<ViewModel, ViewModel.Action>(
-      reducer: ViewModel.Reducer()
-    )
-
-    override func viewDidLoad() {
-      super.viewDidLoad()
-
-      Dispatcher.shared.register(store: self.store)
-
-      store.state.count.asObservable().observeOn(MainScheduler.instance)
-        .subscribe(onNext: { [weak self] count in
-          self?.counterLabel.text = "\(count)"
-        })
-    }
-
-    deinit {
-      Dispatcher.shared.unregister(identifier: self.store.identifier)
-    }
-  }
-  ```
-
-  Dispatch action with UI action:
-  ```swift
-  @IBAction
-  func onTouchPlusButton(sender: Any) {
-    Dispatcher.shared.dispatch(action: ViewModel.Action.plus)
-  }
-
-  @IBAction
-  func onTouchMinusButton(sender: Any) {
-    Dispatcher.shared.dispatch(action: ViewModel.Action.minus)
-  }
-  ```
-
-### Architecture
-
-(:ghost: nice diagram here :ghost:)
-
-##### FLUX for Reactive Programming
-
-FluxxKit would not emit any event when state change like [flux](https://github.com/facebook/flux/blob/962bd9516e3fe2cf2050d7a9c27befa431c5dbca/src/stores/FluxStore.js#L78). Instead, we have RxSwift, ReactiveSwift, ReactiveKit or something else. All the stateful things could be implemented as Observable or Stream, and ViewController could bind and react to them.
-
-#### Flux
-
-```
-View -> Action -> Dispatcher -> (Middleware) -> Store -> Reducer -> Observable
-```
-
-- When a user interacts with a View(Controller), it propagates an `Action`
-- through a central `Dispatcher`,
-- to the various `Store`s that hold the application's data,
-- `state transition` occurs in some `Store` that could responds to dispatched `Action`,
-- which will emit new items to `Observable` property in these `Store`.
-
-#### Reactive Programming
-
-```
-Observable ---> View
-```
-
-- ViewController subscribes Store's `Observable` properties,
-- and react to it.
+- Unidirectional data flow (`View -> Action -> Dispatcher -> Store -> Reducer -> State`)
+- Reactive-library agnostic core
+- **Recommended integration: Combine + SwiftUI**
 
 ## Requirements
 
-| Target            | Version |
-|-------------------|---------|
-| iOS               |  => 8.0 |
-| Swift             |  => 4.0 |
+| Target | Version |
+|---|---|
+| iOS | 16.0+ |
+| Swift | 6.0+ |
+
+## Getting Started (Combine + SwiftUI)
+
+### 1. Define a state
+
+```swift
+import Combine
+import FluxxKit
+
+@MainActor
+final class CounterState: StateType, ObservableObject {
+  @Published var count: Int = 0
+
+  required init() {}
+}
+```
+
+### 2. Define actions
+
+```swift
+extension CounterState {
+  enum Action: ActionType {
+    case plus
+    case minus
+  }
+}
+```
+
+### 3. Define a reducer
+
+```swift
+extension CounterState {
+  final class Reducer: FluxxKit.Reducer<CounterState, Action> {
+    override func reduce(state: CounterState, action: Action) {
+      switch action {
+      case .plus:
+        state.count += 1
+      case .minus:
+        state.count -= 1
+      }
+    }
+  }
+}
+```
+
+### 4. Bind in SwiftUI
+
+```swift
+import SwiftUI
+import FluxxKit
+
+struct CounterView: View {
+  @StateObject private var store = StoreObject<CounterState, CounterState.Action>(
+    reducer: CounterState.Reducer()
+  )
+
+  var body: some View {
+    VStack(spacing: 16) {
+      Text("\(store.state.count)")
+        .font(.system(size: 48, weight: .bold, design: .rounded))
+
+      HStack {
+        Button("-") { store.dispatch(.minus) }
+        Button("+") { store.dispatch(.plus) }
+      }
+      .buttonStyle(.borderedProminent)
+    }
+    .padding()
+    .onAppear { store.register() }
+    .onDisappear { store.unregister() }
+  }
+}
+```
+
+## Architecture
+
+### Flux
+
+```
+View -> Action -> Dispatcher -> (Middleware) -> Store -> Reducer -> State
+```
+
+- User interaction dispatches an `Action`.
+- `Dispatcher` routes actions to matching stores.
+- `Reducer` performs state transition.
+- UI updates by observing state (for example via `@Published`).
+
+### Reactive layer
+
+FluxxKit does not force a specific reactive framework.
+
+- Recommended: **Combine / SwiftUI**
+- Also possible: Any stream/observation mechanism your project uses.
 
 ## Installation
 
-FluxxKit is available through [CocoaPods](http://cocoapods.org) or [Carthage](https://github.com/Carthage/Carthage).
+FluxxKit supports CocoaPods and Carthage.
 
 ### CocoaPods
 
@@ -160,8 +127,6 @@ pod "FluxxKit"
 ```
 github "keitaoouchi/FluxxKit"
 ```
-
-for detail, please follow the [Carthage Instruction](https://github.com/Carthage/Carthage#if-youre-building-for-ios-tvos-or-watchos)
 
 ## Author
 

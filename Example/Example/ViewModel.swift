@@ -1,9 +1,10 @@
+import Combine
 import FluxxKit
-import RxSwift
 
-final class ViewModel: StateType {
-  var repositories: [Repository] = []
-  var viewState = Variable<ViewModel.ViewState>(.done)
+@MainActor
+final class ViewModel: StateType, ObservableObject {
+  @Published var repositories: [Repository] = []
+  @Published var viewState: ViewModel.ViewState = .done
 
   enum ViewState {
     case requesting
@@ -11,6 +12,8 @@ final class ViewModel: StateType {
     case empty
     case done
   }
+
+  required init() {}
 }
 
 // MARK: - FLUX
@@ -27,53 +30,42 @@ extension ViewModel {
   // Handle async action
   final class SearchMiddleware: MiddlewareType {
 
+    private var currentTask: Task<Void, Never>?
+
     func before(dispatch action: ActionType, to store: StoreType) {
       guard case Action.search(let text) = action else { return }
 
-      guard let queryString = text, !queryString.isEmpty else {
+      let query = text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+      guard !query.isEmpty else {
+        currentTask?.cancel()
         store.dispatch(action: Action.reset)
         return
       }
 
-      store.dispatch(
-        action: Action.transition(to: .requesting)
-      )
+      store.dispatch(action: Action.transition(to: .requesting))
 
-      _ = Repository
-        .search(text: queryString)
-        .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .background))
-        .observeOn(MainScheduler.instance)
-        .subscribe { event in
-          switch event {
-          case .next(let repositories):
+      currentTask?.cancel()
+      currentTask = Task {
+        do {
+          let repositories = try await Repository.search(text: query)
+          guard !Task.isCancelled else { return }
 
-            if repositories.isEmpty {
-              store.dispatch(
-                action: Action.transition(to: .empty)
-              )
-            } else {
-              store.dispatch(
-                action: Action.update(repositories: repositories)
-              )
-            }
-
-            store.dispatch(
-              action: Action.transition(to: .done)
-            )
-          case .error:
-
-            store.dispatch(
-              action: Action.transition(to: .failed)
-            )
-
-          case .completed:
-            break
+          if repositories.isEmpty {
+            store.dispatch(action: Action.transition(to: .empty))
+          } else {
+            store.dispatch(action: Action.update(repositories: repositories))
+            store.dispatch(action: Action.transition(to: .done))
           }
+        } catch {
+          guard !Task.isCancelled else { return }
+          store.dispatch(action: Action.transition(to: .failed))
         }
+      }
     }
 
     func after(dispatch action: ActionType, to store: StoreType) {
-      print(store)
+      _ = action
+      _ = store
     }
 
   }
@@ -85,13 +77,13 @@ extension ViewModel {
       switch action {
       case .reset:
         state.repositories.removeAll()
-        state.viewState.value = .done
+        state.viewState = .done
 
       case .update(let repositories):
         state.repositories = repositories
 
       case .transition(let viewState):
-        state.viewState.value = viewState
+        state.viewState = viewState
 
       case .search:
         break

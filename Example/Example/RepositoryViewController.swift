@@ -27,7 +27,7 @@ extension RepositoryViewController {
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
     let repository = viewModel?.repositories[indexPath.row]
-    cell.textLabel?.text = repository?.name
+    cell.textLabel?.text = repository?.fullName
     return cell
   }
 }

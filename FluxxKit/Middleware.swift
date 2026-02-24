@@ -1,4 +1,5 @@
-public protocol MiddlewareType {
+@MainActor
+public protocol MiddlewareType: AnyObject {
 
   func before(dispatch action: ActionType, to store: StoreType)
 

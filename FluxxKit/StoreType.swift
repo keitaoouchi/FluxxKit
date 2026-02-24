@@ -1,4 +1,5 @@
-public protocol StoreType {
+@MainActor
+public protocol StoreType: AnyObject {
 
   var identifier: String { get set }
 

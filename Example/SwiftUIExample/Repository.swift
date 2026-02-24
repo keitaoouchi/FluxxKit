@@ -10,9 +10,7 @@ struct Repository: Codable, Identifiable {
   }
 }
 
-// MARK: - API
 extension Repository {
-
   struct SearchResponse: Codable {
     let items: [Repository]
   }

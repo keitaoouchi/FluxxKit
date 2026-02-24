@@ -45,6 +45,7 @@ struct SearchView: View {
       isRegistered = true
     }
     .onDisappear {
+      searchTask?.cancel()
       Dispatcher.shared.unregister(middleware: SearchMiddleware.self)
       store.unregister()
       isRegistered = false

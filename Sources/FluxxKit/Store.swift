@@ -8,19 +8,10 @@ public final class Store<State: StateType, Action: ActionType> {
 
     public init(
         initialState: State,
-        reducer: LocalReducer<State, Action>
+        reducer: Reducer<State, Action>
     ) {
         self.state = initialState
-        self._reduce = { state, action in reducer.reduce(state, action, .unused) }
-    }
-
-    public init<GlobalAction: ActionType>(
-        initialState: State,
-        reducer: Reducer<State, Action, GlobalAction>,
-        relay: Relay<GlobalAction>
-    ) {
-        self.state = initialState
-        self._reduce = { state, action in reducer.reduce(state, action, relay) }
+        self._reduce = { state, action in reducer.reduce(state, action) }
     }
 
     public func dispatch(_ action: Action) {

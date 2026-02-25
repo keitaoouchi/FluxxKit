@@ -4,8 +4,25 @@ Lightweight Flux-style state management for SwiftUI, built on `@Observable` and 
 
 - Zero external dependencies
 - Swift 6 strict concurrency safe
-- Reducer as a composable function value (not a protocol)
-- `Relay` type for explicit global state coordination
+- Reducer as a composable function value
+
+## Concepts
+
+### Swift is already powerful enough
+
+`enum`, `struct`, `@Observable`, `async/await` — Swift already has everything needed for state management. FluxxKit does not replace these primitives. It simply provides a methodology to organize them.
+
+### Algebraic Data Types as the source of truth
+
+Swift's `enum` functions as an algebraic data type (sum type). By defining Actions as ADTs, the complete set of operations a component can perform is fixed at compile time. The `switch` exhaustiveness check turns unhandled Actions into compiler errors, and when a new Action is added, every Reducer that fails to handle it is flagged immediately.
+
+### Reducer as a pure function
+
+All state transition logic is consolidated into a pure function: `(State, Action) -> (State, Effect)`. No "spooky action at a distance" — state only changes in one place. Testing is just calling a function. Code review is self-contained: reading the Reducer tells you everything that can happen on a given screen.
+
+### Effects as first-class values
+
+Side effects (API calls, timers, global actions) are expressed as return values from the Reducer. Reducer purity is preserved, and the presence of side effects is traceable during code review.
 
 ## Requirements
 
@@ -47,7 +64,7 @@ enum CounterAction: ActionType {
 Reducers are pure functions — no protocol conformance needed.
 
 ```swift
-let counterReducer = LocalReducer<CounterState, CounterAction> { state, action in
+let counterReducer = Reducer<CounterState, CounterAction> { state, action in
     switch action {
     case .increment:
         return (CounterState(count: state.count + 1), .none)
@@ -86,7 +103,7 @@ enum SearchAction: ActionType {
     case loaded([Result])
 }
 
-let searchReducer = LocalReducer<SearchState, SearchAction> { state, action in
+let searchReducer = Reducer<SearchState, SearchAction> { state, action in
     switch action {
     case .search(let query):
         let effect = Effect<SearchAction>.run { dispatch in
@@ -106,83 +123,9 @@ Use `.many` to combine multiple effects:
 return (newState, .many([effect1, effect2]))
 ```
 
-## Global State Coordination with Relay
+## Example App
 
-`Relay` bridges a local store's effects to a global store. The type signature makes cross-store communication explicit and traceable.
-
-### Define a global store
-
-```swift
-struct AppState: StateType {
-    var loggedIn: Bool = true
-}
-
-enum AppAction: ActionType {
-    case logout
-}
-
-let appReducer = LocalReducer<AppState, AppAction> { state, action in
-    switch action {
-    case .logout:
-        return (AppState(loggedIn: false), .none)
-    }
-}
-```
-
-### Create a local store with Relay
-
-```swift
-// The type Reducer<ProfileState, ProfileAction, AppAction> makes it
-// explicit that this reducer can dispatch to the global store.
-let profileReducer = Reducer<ProfileState, ProfileAction, AppAction> { state, action, relay in
-    switch action {
-    case .logoutTapped:
-        let effect = Effect<ProfileAction>.run { _ in
-            await relay.dispatch(.logout)
-        }
-        return (state, effect)
-    }
-}
-```
-
-### Wire it up in SwiftUI
-
-```swift
-@main
-struct MyApp: App {
-    @State private var appStore = Store(
-        initialState: AppState(),
-        reducer: appReducer
-    )
-
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-                .environment(appStore)
-        }
-    }
-}
-
-struct ProfileView: View {
-    @Environment(Store<AppState, AppAction>.self) var appStore
-    @State private var store: Store<ProfileState, ProfileAction>?
-
-    var body: some View {
-        Group {
-            if let store {
-                Button("Logout") { store.dispatch(.logoutTapped) }
-            }
-        }
-        .onAppear {
-            store = Store(
-                initialState: ProfileState(),
-                reducer: profileReducer,
-                relay: .from(appStore)
-            )
-        }
-    }
-}
-```
+[FluxxKitExample](https://github.com/keitaoouchi/FluxxKitExample) — A real-world sample app built with FluxxKit.
 
 ## Architecture
 
@@ -191,9 +134,6 @@ View → Action → Store.dispatch → Reducer(State, Action) → (NewState, Eff
                                                                 ↓
                                                           Effect.run → dispatch(Action)
 ```
-
-- `LocalReducer<State, Action>` — no global coordination (uses `Never` for GlobalAction)
-- `Reducer<State, Action, GlobalAction>` — can dispatch to a global store via `Relay`
 
 ## License
 

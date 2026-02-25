@@ -14,7 +14,7 @@ enum CounterAction: ActionType {
     case multiEffect
 }
 
-private let counterReducer = LocalReducer<CounterState, CounterAction> { state, action in
+private let counterReducer = Reducer<CounterState, CounterAction> { state, action in
     switch action {
     case .increment:
         return (CounterState(count: state.count + 1), .none)
@@ -65,14 +65,5 @@ struct StoreTests {
         store.dispatch(.multiEffect)
         try await Task.sleep(for: .milliseconds(100))
         #expect(store.state.count == 2)
-    }
-
-    @Test @MainActor
-    func localReducerDoesNotInvolveRelay() {
-        // LocalReducer<State, Action> is Reducer<State, Action, Never>
-        // This test verifies it compiles and works without any Relay setup
-        let store = Store(initialState: CounterState(), reducer: counterReducer)
-        store.dispatch(.increment)
-        #expect(store.state.count == 1)
     }
 }

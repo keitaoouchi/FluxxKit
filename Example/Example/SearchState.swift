@@ -26,7 +26,7 @@ enum SearchAction: ActionType {
 
 // MARK: - Reducer
 
-let searchReducer = LocalReducer<SearchState, SearchAction> { state, action in
+let searchReducer = Reducer<SearchState, SearchAction> { state, action in
     switch action {
     case .search(let query):
         var newState = state

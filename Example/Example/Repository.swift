@@ -1,40 +1,37 @@
 import Foundation
 
-struct Repository: Codable, Identifiable {
-  let id: Int
-  let fullName: String
+struct Repository: Codable, Identifiable, Sendable {
+    let id: Int
+    let fullName: String
+    let description: String?
+    let stargazersCount: Int
+    let language: String?
+    let htmlUrl: String
 
-  enum CodingKeys: String, CodingKey {
-    case id
-    case fullName = "full_name"
-  }
+    enum CodingKeys: String, CodingKey {
+        case id
+        case fullName = "full_name"
+        case description
+        case stargazersCount = "stargazers_count"
+        case language
+        case htmlUrl = "html_url"
+    }
 }
 
-// MARK: - API
-extension Repository {
-
-  struct SearchResponse: Codable {
+struct SearchResponse: Codable, Sendable {
     let items: [Repository]
-  }
+}
 
-  enum RepositoryError: Error {
-    case queryError
-  }
+enum GitHubAPI {
+    static func search(query: String) async throws -> [Repository] {
+        guard let encoded = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: "https://api.github.com/search/repositories?q=\(encoded)&sort=stars")
+        else { throw URLError(.badURL) }
 
-  static func search(text: String) async throws -> [Repository] {
-    var components = URLComponents(string: "https://api.github.com/search/repositories")
-    components?.queryItems = [
-      .init(name: "q", value: text),
-      .init(name: "sort", value: "stars"),
-      .init(name: "order", value: "desc")
-    ]
+        var request = URLRequest(url: url)
+        request.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
 
-    guard let url = components?.url else {
-      throw RepositoryError.queryError
+        let (data, _) = try await URLSession.shared.data(for: request)
+        return try JSONDecoder().decode(SearchResponse.self, from: data).items
     }
-
-    let (data, _) = try await URLSession.shared.data(from: url)
-    let decoded = try JSONDecoder().decode(SearchResponse.self, from: data)
-    return decoded.items
-  }
 }
